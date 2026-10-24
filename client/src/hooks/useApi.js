@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 
+const PROD_BACKEND = 'https://intrusion-detection-backend-1jrs.onrender.com';
 const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-const API_URL = import.meta.env.VITE_API_URL || (isLocalhost ? (window.location.port === '3000' ? '/api' : 'http://localhost:5001/api') : '/api');
+const API_URL = import.meta.env.VITE_API_URL || (isLocalhost ? (window.location.port === '3000' ? '/api' : 'http://localhost:5001/api') : `${PROD_BACKEND}/api`);
 
 export function useApi(endpoint, options = {}) {
   const [data, setData] = useState(options.fallbackData || options.initialData || null);

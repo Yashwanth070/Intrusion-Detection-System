@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { io } from 'socket.io-client';
 
+const PROD_BACKEND = 'https://intrusion-detection-backend-1jrs.onrender.com';
 const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || (isLocalhost ? (window.location.port === '3000' ? '' : 'http://localhost:5001') : '');
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || (isLocalhost ? (window.location.port === '3000' ? '' : 'http://localhost:5001') : PROD_BACKEND);
 
 export function useSocket() {
   const [isConnected, setIsConnected] = useState(false);
