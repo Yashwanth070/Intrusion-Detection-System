@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
-const API_URL = window.location.port === '3000' ? '/api' : 'http://localhost:5001/api';
+const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_URL = import.meta.env.VITE_API_URL || (isLocalhost ? (window.location.port === '3000' ? '/api' : 'http://localhost:5001/api') : '/api');
 
 export function useApi(endpoint, options = {}) {
   const [data, setData] = useState(options.fallbackData || options.initialData || null);
@@ -17,8 +18,8 @@ export function useApi(endpoint, options = {}) {
       setError(null);
     } catch (err) {
       setError(err.message);
-      // Retain fallback data if provided
-      if (options.fallbackData && data === null) {
+      // Retain or restore fallback data if provided
+      if (options.fallbackData) {
         setData(options.fallbackData);
       }
     } finally {

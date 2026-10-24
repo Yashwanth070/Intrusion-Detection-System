@@ -218,6 +218,54 @@ export default function Dashboard() {
     };
   }, [subscribe]);
 
+  // Live simulation ticker for preview/standalone deployments (e.g. Vercel demo) when socket is not connected
+  useEffect(() => {
+    if (isConnected) return;
+
+    const attackTypes = ['DDoS', 'Scanning', 'Injection', 'Password', 'DoS', 'Backdoor', 'MITM', 'XSS', 'Ransomware'];
+    const severities = ['critical', 'high', 'medium', 'low'];
+    const models = ['LightGBM', 'XGBoost', 'Random Forest', 'Decision Tree', 'MLP'];
+    const protocols = ['TCP', 'UDP', 'HTTP', 'MQTT', 'ICMP'];
+
+    const interval = setInterval(() => {
+      const attack = attackTypes[Math.floor(Math.random() * attackTypes.length)];
+      const simAlert = {
+        id: `ALT-${Math.floor(9400 + Math.random() * 599)}`,
+        timestamp: new Date().toLocaleTimeString(),
+        attackType: attack,
+        severity: attack === 'DDoS' || attack === 'Backdoor' || attack === 'Ransomware' ? 'critical' : severities[Math.floor(Math.random() * severities.length)],
+        srcIp: `192.168.1.${Math.floor(2 + Math.random() * 240)}`,
+        dstIp: `192.168.1.${Math.floor(1 + Math.random() * 30)}`,
+        protocol: protocols[Math.floor(Math.random() * protocols.length)],
+        model: models[Math.floor(Math.random() * models.length)],
+        confidence: +(95 + Math.random() * 4.9).toFixed(1),
+        isNew: true
+      };
+
+      setAlerts(prev => [simAlert, ...prev.slice(0, 14)]);
+
+      // Natural variance in edge hardware telemetry
+      setDevices(prev => ({
+        arduinoMega: {
+          ...prev.arduinoMega,
+          cpu: Math.min(95, Math.max(68, Math.round(prev.arduinoMega.cpu + (Math.random() * 6 - 3)))),
+          memory: Math.min(92, Math.max(78, Math.round(prev.arduinoMega.memory + (Math.random() * 2 - 1)))),
+          temp: `${Math.round(40 + Math.random() * 3)}°C`,
+          packetsSec: Math.round(130 + Math.random() * 25)
+        },
+        esp32c3: {
+          ...prev.esp32c3,
+          cpu: Math.min(48, Math.max(22, Math.round(prev.esp32c3.cpu + (Math.random() * 6 - 3)))),
+          memory: Math.min(42, Math.max(28, Math.round(prev.esp32c3.memory + (Math.random() * 2 - 1)))),
+          temp: `${Math.round(35 + Math.random() * 3)}°C`,
+          packetsSec: Math.round(920 + Math.random() * 80)
+        }
+      }));
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, [isConnected]);
+
   // Safe Stats values
   const stats = statsData || fallbackStats;
 
