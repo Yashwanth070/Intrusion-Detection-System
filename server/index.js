@@ -27,6 +27,24 @@ app.use('/api/alerts', alertRoutes);
 app.use('/api/devices', deviceRoutes);
 app.use('/api/models', modelRoutes);
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    name: 'IoT/IIoT Intrusion Detection System API Server',
+    status: 'online',
+    version: '1.0.0',
+    health: '/api/health',
+    endpoints: {
+      stats: '/api/alerts/stats',
+      timeline: '/api/alerts/timeline',
+      distribution: '/api/alerts/distribution',
+      alerts: '/api/alerts',
+      devices: '/api/devices',
+      models: '/api/models'
+    }
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
